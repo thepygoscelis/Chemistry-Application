@@ -64,16 +64,25 @@
       (clear-periodic-text-fields)
       (let ([element (list-ref (get-elements) (- atomic-number 1))])
         (send element-info-name set-value (list-ref element 1))
-        (send element-info-number set-value (list-ref element 0))
+        (send element-info-number set-value (number->string (list-ref element 2)))
         (send element-info-weight set-value (number->string (list-ref element 3)))
-        (send element-info-symbol set-value (number->string (list-ref element 2))))))
+        (send element-info-symbol set-value (list-ref element 0)))))
 ;This will find what the radio button is set to and then fill in the fields accordingly based on one other field.
 (define search-periodic (new button% [label "Find"] [parent element-search] [callback (lambda (button event)
                                                                 (let ([search-by (send radial-search get-selection)])
                                                                   ;0 is Name
                                                                   (if (equal? search-by 0)
                                                                       (set-periodic-text-fields (atomic-number-by-name (send element-info-name get-value)))
-                                                                      #f)))]))
+                                                                      (if (equal? search-by 1)
+                                                                          ;mass
+                                                                          (set-periodic-text-fields (atomic-number-by-mass (string->number (send element-info-weight get-value))))
+                                                                          (if (equal? search-by 2)
+                                                                          ;symbol
+                                                                              (set-periodic-text-fields (atomic-number-by-symbol (send element-info-symbol get-value)))
+                                                                              (if (equal? search-by 3)
+                                                                                  ;atomic number
+                                                                                  (set-periodic-text-fields (string->number (send element-info-number get-value)))
+                                                                                  #f))))))]))
                                                                 
                                                      
                                                      
@@ -81,9 +90,9 @@
   (for ([element element-list])
     (let ([atom-num (list-ref element 2)] [callbackfunc (lambda (button event)
                                                                           (send element-info-name set-value (list-ref element 1))
-                                                                          (send element-info-number set-value (list-ref element 0))
+                                                                          (send element-info-number set-value (number->string (list-ref element 2)))
                                                                           (send element-info-weight set-value (number->string (list-ref element 3)))
-                                                                          (send element-info-symbol set-value (number->string (list-ref element 2))))])
+                                                                          (send element-info-symbol set-value (list-ref element 0)))])
       (if (>= atom-num 87)
           (new button% [label (first element)] [parent row-7] [callback callbackfunc] [min-width 35])
           (if (>= atom-num 55)

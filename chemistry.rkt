@@ -2,7 +2,7 @@
 ;Purpose: To stop boredom from prolonged period of not programming
 ;Secondary Purpose: Create a utility to augment Chemistry knowledge.
 #lang racket
-(provide get-elements atomic-number-by-name determine-abundances) 
+(provide get-elements atomic-number-by-name determine-abundances atomic-number-by-mass atomic-number-by-symbol) 
 ; Symbol -> Name -> Atomic Number -> Atomic Weight
 (define elements
   (list (list 
@@ -570,14 +570,23 @@
 ;Returns Molar Mass
 (define (element-mass n)
   (car (cdr (cdr (cdr (list-ref elements (- n 1)))))))
-
 ;Takes Atomic Number
 ;Returns String of the Atomic Symbol
 (define (element-symbol n)
   (car (list-ref elements (- n 1))))
-
+;Takes Mass
+;Returns Atomic Number
+(define (atomic-number-by-mass mass)
+	(fetch-by-mass elements mass))
+(define (fetch-by-mass list-of-elements mass)
+	(if (not (empty? list-of-elements))
+	    (if (equal? (car (cdr (cdr (cdr (car list-of-elements))))) mass)
+	    	(car (cdr (cdr (car list-of-elements))))
+		(fetch-by-mass (cdr list-of-elements) mass)
+		)
+		#f))
 ;Takes Atomic Symbol
-;Returns Atomic Mass
+;Returns Atomic Number
 (define (atomic-number-by-symbol sym)
   (fetch-by-symbol elements sym)
   )
